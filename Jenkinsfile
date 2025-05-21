@@ -23,19 +23,21 @@ pipeline {
         stage('Docker Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
-                        echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                        docker tag myapp \$DOCKER_USER/myapp:latest
-                        docker push \$DOCKER_USER/myapp:latest
-                    """
+                    timeout(time: 10, unit: 'MINUTES') {
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                            docker tag myapp "$DOCKER_USER/myapp:latest"
+                            docker push "$DOCKER_USER/myapp:latest"
+                        '''
+                    }
                 }
             }
         }
 
         stage('Deploy to K8s') {
             steps {
-                sh 'minikube kubectl -- apply -f k8s/deployment.yaml'
-                sh 'minikube kubectl -- apply -f k8s/service.yaml'
+                sh 'kubectl apply -f k8s/deployment.yaml'
+                sh 'kubectl apply -f k8s/service.yaml'
             }
         }
     }
