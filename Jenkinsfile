@@ -1,6 +1,9 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_BUILDKIT = '1'
+    }
     stages {
         stage('Clone') {
             steps {
@@ -16,7 +19,13 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t myapp .'
+                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                    sh """
+                                        docker login -u \$DOCKER_USER -p \$DOCKER_PASS
+                                        docker pull \$DOCKER_USER/myapp:latest || true
+                                        docker build --cache-from=\$DOCKER_USER/myapp:latest -t myapp .
+                                    """
+                                }
             }
         }
 
