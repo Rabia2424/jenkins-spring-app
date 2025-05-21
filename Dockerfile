@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} myapp.jar
-ENTRYPOINT ["java", "-jar", "/myapp.jar"]
+FROM openjdk:17
+WORKDIR /app
+COPY target/*.jar myapp.jar
+ENTRYPOINT ["java","-jar","myapp.jar"]
