@@ -10,34 +10,32 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                bat 'mvn clean package -DskipTests'
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t myapp .'
+                bat 'docker build -t myapp .'
             }
         }
 
         stage('Docker Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    timeout(time: 10, unit: 'MINUTES') {
-                        sh '''
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                            docker tag myapp "$DOCKER_USER/myapp:latest"
-                            docker push "$DOCKER_USER/myapp:latest"
-                        '''
-                    }
+                    bat 'echo %DOCKER_PASS% > pass.txt'
+                    bat 'docker login -u %DOCKER_USER% --password-stdin < pass.txt'
+                    bat 'docker tag myapp %DOCKER_USER%/myapp:latest'
+                    bat 'docker push %DOCKER_USER%/myapp:latest'
+                    bat 'del pass.txt'
                 }
             }
         }
 
         stage('Deploy to K8s') {
             steps {
-                sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
+                bat 'kubectl apply -f k8s\\deployment.yaml'
+                bat 'kubectl apply -f k8s\\service.yaml'
             }
         }
     }
