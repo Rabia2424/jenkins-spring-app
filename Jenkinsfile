@@ -34,9 +34,10 @@ pipeline {
 
         stage('Deploy to K8s') {
             steps {
-                bat 'kubectl apply -f k8s\\deployment.yaml'
-                bat 'kubectl apply -f k8s\\service.yaml'
-            }
+                    withEnv(['KUBECONFIG=C:\\Users\\Rabia\\.kube\\config']) {
+                        bat 'kubectl apply -f k8s\\deployment.yaml --validate=false'
+                        bat 'kubectl apply -f k8s\\service.yaml --validate=false'
+                    }
         }
     }
 }
