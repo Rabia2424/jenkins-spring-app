@@ -16,4 +16,4 @@ spec:
         - name: myapp
           image: rabia4488/myapp:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 8082
