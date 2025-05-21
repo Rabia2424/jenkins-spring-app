@@ -15,5 +15,6 @@ spec:
       containers:
         - name: myapp
           image: rabia4488/myapp:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8082
