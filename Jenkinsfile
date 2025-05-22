@@ -16,21 +16,25 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t myapp .'
+                sh 'docker build -t rabia4488/myapp:latest .'
             }
         }
 
-        stage('Docker Push') {
+        stage('Docker Login') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
                         echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                        docker tag myapp \$DOCKER_USER/myapp:latest
-                        docker push \$DOCKER_USER/myapp:latest
                     """
                 }
             }
         }
+
+        stage('Docker Push') {
+                    steps {
+                        sh 'docker push rabia4488/myapp:latest'
+                    }
+                }
 
         stage('Deploy to K8s') {
             steps {
