@@ -32,7 +32,7 @@ pipeline {
 
         stage('Docker Push') {
                     steps {
-                        sh 'docker push rabia4488/myapp:latest'
+                        sh 'docker push rabia4488/myapp'
                     }
                 }
 
